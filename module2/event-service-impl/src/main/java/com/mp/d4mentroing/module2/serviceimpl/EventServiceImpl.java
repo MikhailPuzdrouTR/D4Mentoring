@@ -3,6 +3,7 @@ package com.mp.d4mentroing.module2.serviceimpl;
 import com.mp.d4mentroing.module2.service.EventService;
 import com.mp.d4mentroing.module2.domain.Event;
 import com.mp.d4mentroing.module2.repository.EventRepository;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
