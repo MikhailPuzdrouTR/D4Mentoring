@@ -1,8 +1,8 @@
-package com.mp.d4mentroing.module2.controller;
+package com.mp.d4mentroing.module2.steps;
 
 import com.mp.d4mentroing.module2.domain.Event;
+import com.mp.d4mentroing.module2.exception.NotFoundException;
 import com.mp.d4mentroing.module2.service.EventService;
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,11 @@ public class EventController {
     @PutMapping("/{eventId}")
     public Event updateEvent(@RequestBody Event event, @PathVariable("eventId") String eventId) {
         event.setId(eventId);
-        return eventService.updateEvent(event);
+        try {
+            return eventService.updateEvent(event);
+        } catch (RuntimeException ex) {
+            throw new NotFoundException(ex.getMessage());
+        }
     }
 
     @DeleteMapping("/{eventId}")
