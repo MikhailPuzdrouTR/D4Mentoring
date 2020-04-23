@@ -27,9 +27,6 @@ public class MongoRepoImpl<T> implements MongoRepository<T> {
     @Autowired
     private MongoDatabase mongoDatabase;
 
-    @Autowired
-    private StereotypeUtil stereotypeUtil;
-
     private Class<T> dtoClassInfo;
 
     protected MongoCollection<Document> mongoCollection;
@@ -40,7 +37,7 @@ public class MongoRepoImpl<T> implements MongoRepository<T> {
                 .getGenericSuperclass())
                 .getActualTypeArguments()[0];
 
-        stereotypeUtil.verifyIsCollectionType(dtoClassInfo);
+        StereotypeUtil.verifyIsCollectionType(dtoClassInfo);
         var mongoCollectionInfo = dtoClassInfo.getDeclaredAnnotation(com.mp.haron.stereotype.MongoCollection.class);
         String collectionName = mongoCollectionInfo.collectionName();
         this.mongoCollection = mongoDatabase.getCollection(collectionName);
@@ -73,7 +70,7 @@ public class MongoRepoImpl<T> implements MongoRepository<T> {
 
     @Override
     public <S extends T> Optional<S> update(S entityForUpdate) {
-        var id = stereotypeUtil.getDocumentIfFromDto(entityForUpdate, dtoClassInfo);
+        var id = StereotypeUtil.getDocumentIfFromDto(entityForUpdate, dtoClassInfo);
         return id.flatMap(this::getDocumentById).map(found -> {
             mongoCollection.replaceOne(new Document("_id", found.getObjectId("_id")), converter.convertToDocument(entityForUpdate), new UpdateOptions().upsert( true ));
             return entityForUpdate;

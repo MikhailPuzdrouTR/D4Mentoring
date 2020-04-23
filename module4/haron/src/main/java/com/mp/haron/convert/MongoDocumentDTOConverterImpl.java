@@ -15,14 +15,7 @@ public class MongoDocumentDTOConverterImpl implements MongoDocumentDTOConverter 
 
     private static final String TYPE_FIELD = "type__";
 
-    @Autowired
-    private StereotypeUtil stereotypeUtil;
-
     public MongoDocumentDTOConverterImpl() {
-    }
-
-    public MongoDocumentDTOConverterImpl(StereotypeUtil stereotypeUtil) {
-        this.stereotypeUtil = stereotypeUtil;
     }
 
     @Override
@@ -36,10 +29,10 @@ public class MongoDocumentDTOConverterImpl implements MongoDocumentDTOConverter 
 
     private <T> Document _convertToDocument(T dto) throws IllegalAccessException {
         Class dtoClassInfo = dto.getClass();
-        var fields = stereotypeUtil.getFieldInfosFromClass(dtoClassInfo);
+        var fields = StereotypeUtil.getFieldInfosFromClass(dtoClassInfo);
         final var document = new Document();
         document.append(TYPE_FIELD, dtoClassInfo.getName());
-        stereotypeUtil.getDocumentIfFromDto(dto, dtoClassInfo).ifPresent(id -> document.append("_id", new ObjectId(id)));
+        StereotypeUtil.getDocumentIfFromDto(dto, dtoClassInfo).ifPresent(id -> document.append("_id", new ObjectId(id)));
         for (FieldInfo field : fields) {
             field.getField().setAccessible(true);
             if (field.isCollection()) {
@@ -71,7 +64,7 @@ public class MongoDocumentDTOConverterImpl implements MongoDocumentDTOConverter 
         try {
             var type = document.get(TYPE_FIELD, String.class);
             Class<?> classInfo = Class.forName(type);
-            List<FieldInfo> fieldInfos = stereotypeUtil.getFieldInfosFromClass(classInfo);
+            List<FieldInfo> fieldInfos = StereotypeUtil.getFieldInfosFromClass(classInfo);
             T dto = (T) classInfo.newInstance();
             setIdToDto(document.getObjectId("_id"), dto, classInfo);
             for (var fieldInfo : fieldInfos) {
